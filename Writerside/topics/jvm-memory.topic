@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic
+        SYSTEM "https://resources.jetbrains.com/writerside/1.0/xhtml-entities.dtd">
+<topic xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="https://resources.jetbrains.com/writerside/1.0/topic.v2.xsd"
+       title="JVM 메모리" id="jvm-memory">
+
+    <p>JVM(Java Virtual Machine)은 여러 메모리 구성 요소를 가지고 있으며, 각각의 요소는 특정한 역할을 수행합니다.</p>
+    <chapter title="JVM의 메모리 구성요소">
+        <img alt="p02-c07-2-1.png" src="jvm-memory-1.png"/>
+        <deflist>
+            <def title="Stack Area">
+                <list>
+                    <li>메소드 호출과 관련된 정보를 저장합니다.</li>
+                    <li>지역 변수, 메소드 호출, 리턴 값 등이 저장되며, 각 스레드마다 별도의 스택이 생성됩니다.</li>
+                </list>
+            </def>
+            <def title="PC Register">
+                <list>
+                    <li>현재 수행 중인 JVM 명령의 주소를 저장합니다.</li>
+                    <li>각 스레드마다 별도의 PC Register가 존재하며, 스레드가 현재 수행 중인 명령의 주소를 가리킵니다.</li>
+                </list>
+            </def>
+            <def title="Native Method Area">
+                <list>
+                    <li>자바 외부에서 호출되는 네이티브 코드를 위한 공간입니다.</li>
+                    <li>자바 외부에서 호출되는 메서드의 정보와 코드가 저장됩니다.</li>
+                </list>
+            </def>
+            <def title="Shared Memory">
+                <list>
+                    <li>다수의 스레드 간에 공유되는 메모리 영역입니다.</li>
+                    <li>멀티스레드 환경에서 데이터를 공유하는 데 사용되며, 여러 JVM 인스턴스 간에도 공유 가능합니다.</li>
+                </list>
+            </def>
+        </deflist>
+    </chapter>
+
+    <chapter title="JVM의 Heap 구조">
+        <img alt="p02-c07-2-2.png" src="jvm-memory-2.png"/>
+        <deflist>
+            <def title="Metadata Space">
+                <list>
+                    <li>클래스 로더, 메서드, 상수 풀 등의 메타데이터를 저장합니다.</li>
+                    <li>JVM 시작 시에 생성되며, 클래스와 관련된 정보가 저장됩니다.</li>
+                </list>
+            </def>
+            <def title="Eden Space">
+                <list>
+                    <li>새로 생성된 객체가 할당되는 공간입니다.</li>
+                    <li>Young Generation에 속하며, 객체가 최초로 생성되면 여기에 할당됩니다.</li>
+                </list>
+            </def>
+            <def title="Survivor Space 0, 1">
+                <list>
+                    <li>Eden Space에서 일정 시간 살아남은 객체들이 복사되는 공간입니다.</li>
+                    <li>각각의 Survivor Space는 새로 생성된 객체 중 일부가 이동하게 됩니다.</li>
+                </list>
+            </def>
+            <def title="Tenured Space">
+                <list>
+                    <li>Survivor Space에서 일정 시간 살아남은 객체들이 이동하는 공간입니다.</li>
+                    <li>Old Generation에 속하며, 오랜 시간 살아남은 객체들이 저장되어 있습니다.</li>
+                </list>
+            </def>
+        </deflist>
+    </chapter>
+
+    <chapter title="메모리 설정">
+        <procedure title="최소 메모리, 최대 메모리 설정">
+            <code-block lang="plain text">
+                java -Xms256m -Xmx1024m -jar MyApp.jar
+            </code-block>
+            <p>JVM 시작 시 최소 메모리(Xms)와 최대 메모리(Xmx)를 설정하여 힙 영역의 크기를 조절합니다.</p>
+        </procedure>
+
+        <procedure title="메모리 비율 설정">
+            <code-block lang="plain text">
+                java -XX:NewRatio=2 -jar MyApp.jar
+            </code-block>
+            <p><control>-XX:NewRatio</control> 옵션을 사용하여 Young Generation과 Old Generation 사이의 비율을 설정합니다.</p>
+        </procedure>
+    </chapter>
+</topic>

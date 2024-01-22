@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE instance-profile
+        SYSTEM "https://resources.jetbrains.com/writerside/1.0/product-profile.dtd">
+
+<instance-profile id="hi"
+                 name="Help Instance"
+                 start-page="main.topic">
+
+    <toc-element topic="main.topic"/>
+
+    <toc-element toc-title="유틸리티 강의">
+        <toc-element toc-title="JVM 이해하기">
+            <toc-element topic="jvm-memory.topic"/>
+        </toc-element>
+    </toc-element>
+</instance-profile>
