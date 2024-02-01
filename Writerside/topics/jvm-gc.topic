@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic
+        SYSTEM "https://resources.jetbrains.com/writerside/1.0/xhtml-entities.dtd">
+<topic xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="https://resources.jetbrains.com/writerside/1.0/topic.v2.xsd"
+       title="JVM의 GC" id="jvm-gc">
+
+    <chapter title="GC(Garbage Collection)의 개요">
+        <p>GC는 메모리 관리를 위해 더 이상 사용되지 않는 객체들을 찾아내고 해제하는 프로세스를 의미합니다. 이는 자바의 핵심 특징인 자동 메모리 관리를 가능하게 합니다.</p>
+    </chapter>
+
+    <chapter title="GC 과정">
+        <img alt="jvm-gc-1.png" src="jvm-gc-1.png"/>
+        <p>GC 과정은 크게 세 가지로 나뉩니다.</p>
+        <chapter title="Mark(표시)">
+            <deflist>
+                <def title="GC Root">
+                    <p>GC는 루트 객체에서 출발합니다. GC Root는 주로 스택 프레임, 정적 변수, JNI(Java Native Interface) 참조 등을 포함합니다.</p>
+                </def>
+                <def title="Reachable Objects">
+                    <p>GC Root에서 참조되는 객체들을 표시합니다.</p>
+                </def>
+            </deflist>
+        </chapter>
+        <chapter title="Sweep(청소)">
+            <deflist>
+                <def title="Unreachable Objects">
+                    <p>표시되지 않은 객체는 사용되지 않는 객체로 간주하고 해제합니다.</p>
+                </def>
+                <def title="Free Memory">
+                    <p>해제된 메모리를 다시 사용 가능한 상태로 만듭니다.</p>
+                </def>
+            </deflist>
+        </chapter>
+        <chapter title="Compact(압축)">
+            <deflist>
+                <def title="메모리 조각화 해소">
+                    <p>힙 내의 빈 공간을 조각내지 않고 객체를 모으는 작업을 수행하여 메모리 조각화를 해소합니다.</p>
+                </def>
+                <def title="객체 이동">
+                    <p>객체가 이동되어 메모리의 연속된 공간에 배치됩니다.</p>
+                </def>
+            </deflist>
+        </chapter>
+    </chapter>
+
+    <chapter title="GC의 종류">
+        <chapter title="Minor GC">
+            <deflist>
+                <def title="Young Generation에서 발생">
+                    <p>Eden 영역에서 더 이상 참조되지 않는 객체를 제거합니다.</p>
+                </def>
+                <def title="빈번한 발생">
+                    <p>객체의 생명 주기 중 초기 단계에서 더 자주 발생합니다.</p>
+                </def>
+            </deflist>
+        </chapter>
+
+        <chapter title="Major GC">
+            <deflist>
+                <def title="Old Generation에서 발생">
+                    <p>Old Generation 영역에서 더 이상 참조되지 않는 객체를 제거합니다.</p>
+                </def>
+                <def title="Young Generation의 객체 이동">
+                    <p>Young Generation에서 살아남은 객체들이 Old Generation으로 이동할 때 발생합니다.</p>
+                </def>
+            </deflist>
+        </chapter>
+
+        <chapter title="Full GC">
+            <deflist>
+                <def title="전체 힙 영역에 대한 GC">
+                    <p>Young Generation과 Old Generation, Perm 영역을 모두 청소합니다.</p>
+                </def>
+                <def title="비용이 큼">
+                    <p>Full GC는 일반적으로 더 많은 시간과 자원을 소모합니다.</p>
+                </def>
+            </deflist>
+        </chapter>
+    </chapter>
+
+    <chapter title="GC 알고리즘">
+        <chapter title="Serial GC">
+            <deflist>
+                <def title="단일 스레드 사용">
+                    <p>Young 및 Old Generation의 GC를 단일 스레드로 처리합니다.</p>
+                </def>
+                <def title="간단하고 예측 가능">
+                    <p>간단한 알고리즘이지만, 대용량 서버에서는 성능이 부족할 수 있습니다.</p>
+                </def>
+            </deflist>
+        </chapter>
+
+        <chapter title="Parallel GC">
+            <img alt="jvm-gc-2.png" src="jvm-gc-2.png" width="640"/>
+            <deflist>
+                <def title="다중 스레드 사용">
+                    <p>Young 및 Old Generation의 GC를 다중 스레드로 처리하여 성능 향상을 도모합니다.</p>
+                </def>
+                <def title="Throughput 높음">
+                    <p>대용량 데이터를 처리하는 데 적합합니다.</p>
+                </def>
+            </deflist>
+        </chapter>
+
+        <chapter title="CMS GC (Concurrent Mark-Sweep)">
+            <img alt="jvm-gc-3.png" src="jvm-gc-3.png"/>
+            <deflist>
+                <def title="중단 시간 최소화">
+                    <p>주로 Old Generation을 처리하며, Young Generation은 병렬 GC를 사용합니다.</p>
+                </def>
+                <def title="응답 시간 향상">
+                    <p>애플리케이션 중단 시간을 최소화하여 응답 시간을 향상시킵니다.</p>
+                </def>
+            </deflist>
+        </chapter>
+
+        <chapter title="G1 GC (Garbage First)">
+            <img alt="jvm-gc-4.png" src="jvm-gc-4.png" width="750"/>
+            <img alt="jvm-gc-5.png" src="jvm-gc-5.png"/>
+            <deflist>
+                <def title="영역 기반의 GC">
+                    <p>Young과 Old Generation을 나누지 않고 영역 기반으로 GC를 수행합니다.</p>
+                </def>
+                <def title="고급 메모리 관리">
+                    <p>자동적으로 GC 작업을 분산하여 고급 메모리 관리를 수행합니다.</p>
+                </def>
+            </deflist>
+        </chapter>
+
+        <chapter title="G1 GC">
+            <p>CMS의 Fragmentation을 줄이고, GC의 부하를 낮추기 위해 고안된 방법입니다.</p>
+            <deflist>
+                <def title="특징">
+                    <list>
+                        <li>기존 GC처럼 물리적인 영역의 범위로 나누지 않고, Region 단위로 블럭을 나누어서 관리합니다.</li>
+                        <li>Region은 논리적으로 구분되어 각 영할에 맞는 객체가 할당됩니다.</li>
+                        <li>조각</li>
+                    </list>
+                </def>
+            </deflist>
+        </chapter>
+    </chapter>
+</topic>

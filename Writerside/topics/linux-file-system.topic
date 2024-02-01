@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic
+        SYSTEM "https://resources.jetbrains.com/writerside/1.0/xhtml-entities.dtd">
+<topic xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="https://resources.jetbrains.com/writerside/1.0/topic.v2.xsd"
+       title="man, 파일시스템 명령어" id="linux-file-system">
+
+    <chapter title="명령어 설명을 보는 방법">
+        <deflist>
+            <def title="man">
+                <list>
+                    <li>원하는 명령어의 설명(manual)을 볼 수 있습니다.</li>
+                    <li>특정 명령어의 사용방법을 확인할 수 있습니다.</li>
+                </list>
+                <p>예시) find 명령어의 설명을 출력</p>
+                <code-block lang="shell">
+                    man find
+                </code-block>
+            </def>
+            <def title="help parameter (-help, --help)">
+                <list>
+                    <li>리눅스 기본 명령어도 지원을 하는 경우가 있습니다.</li>
+                    <li>하지만, 기본 명령어는 man 이 기본입니다.</li>
+                </list>
+            </def>
+        </deflist>
+    </chapter>
+
+    <chapter title="파일 시스템">
+        <chapter title="리눅스에서 경로를 표시하는 방법">
+            <deflist>
+                <def title="/">
+                    <p>root 로 시스템의 최상위 시작 지점입니다.</p>
+                </def>
+                <def title="~">
+                    <p>home 으로 로그인한 유저의 home 경로를 의미합니다.</p>
+                </def>
+                <def title="/">
+                    <p>디렉토리를 구분하는 구분자입니다.</p>
+                </def>
+                <def title="..">
+                    <p>상위 디렉토리를 의미합니다.</p>
+                </def>
+                <def title=".">
+                    <p>현재 디렉토리를 의미합니다.</p>
+                </def>
+                <def title="-">
+                    <p>이전 위치를 의미합니다.</p>
+                </def>
+            </deflist>
+        </chapter>
+
+        <chapter title="파일 시스템 이용을 위한 명령어">
+            <deflist>
+                <def title="pwd">
+                    <list>
+                        <li>Print Work Directory 의 약자입니다.</li>
+                        <li>현재 터미널이 위치한 디렉토리 경로를 볼 수 있습니다.</li>
+                    </list>
+                </def>
+                <def title="ls">
+                    <list>
+                        <li>List Segments 의 약자입니다.</li>
+                        <li>디렉토리의 모든 파일 정보를 보여줍니다.</li>
+                    </list>
+                    <p>예시) 숨김 파일과 파일의 모든 정보를 표시</p>
+                    <code-block lang="shell">
+                        ls -al
+                    </code-block>
+                    <p>예시) 파일 또는 디렉토리의 inode number 를 표시 (디렉토리의 고유 식별 부호)</p>
+                    <code-block lang="shell">
+                        ls -il
+                    </code-block>
+                </def>
+                <def title="cd">
+                    <list>
+                        <li>Change Directory 의 약자입니다.</li>
+                        <li>지정한 디렉토리로 이동합니다.</li>
+                        <li>기본은 현재 위치부터 상대 경로로 이동이며, root 부터 모든 경로를 입력하면 절대 경로로 이동합니다.</li>
+                    </list>
+                </def>
+                <def title="mkdir">
+                    <list>
+                        <li>Make Directory 의 약자입니다.</li>
+                        <li>새 디렉토리를 생성합니다.</li>
+                        <li>기본은 상대 경로로 생성이며, root 부터 모든 경로를 입력하면 절대 경로에 생성합니다.</li>
+                    </list>
+                </def>
+                <def title="rm">
+                    <list>
+                        <li>Remove 의 약자입니다.</li>
+                        <li>지정한 파일 또는 디렉토리를 삭제합니다.</li>
+                        <li>-f 옵션으로 되묻지 않고 바로 삭제합니다.</li>
+                        <li>-r 옵션으로 디렉토리와 디렉토리 안의 모든 내용을 지울 수 있습니다.</li>
+                    </list>
+                </def>
+                <def title="df">
+                    <list>
+                        <li>Disk Filesystem 의 약자입니다.</li>
+                        <li>디스크 공간에 대한 정보를 볼 수 있습니다. (used, free, mount 정보)</li>
+                        <li>-h (human readable) 옵션과 함께 자주 사용됩니다.</li>
+                    </list>
+                </def>
+                <def title="du">
+                    <list>
+                        <li>Disk Usage 의 약자입니다.</li>
+                        <li>디스크 사용량, 사용율을 볼 수 있습니다.</li>
+                        <li>-h (human readable) 옵션과 함께 자주 사용됩니다.</li>
+                        <li>-s (summary) 옵션은 해당 경로 하위의 총합을 보여줍니다.</li>
+                        <li>-d (max-depth) 옵션은 해당 깊이 만큼 펼쳐서 보여줍니다.</li>
+                    </list>
+                </def>
+                <def title="chmod">
+                    <list>
+                        <li>Change Mode 의 약자입니다.</li>
+                        <li>파일의 접근 권한을 변경할 수 있습니다.</li>
+                        <li>파일 권한의 종류는 r(read), w(write), x(execute) 세 가지가 있습니다.</li>
+                        <li>파일 권한의 범위는 파일 소유자 u(user), 그룹 g(group), 그 외 사용자 o(other)가 있습니다.</li>
+                        <li>모든 것을 포함하는 모든 사용자 a(all)도 있습니다.</li>
+                        <li>변환하는 방법에는 추가(+), 제거(-), 지정(=)이 있습니다.</li>
+                        <li>user, group, others 각각 3자리의 2진수로 표현된 파일 모드를 지정할 수 있습니다.</li>
+                    </list>
+                    <p>예시) 모든 사용자에게 모든 권한 부여</p>
+                    <code-block lang="shell">
+                        chmod 777
+                    </code-block>
+                </def>
+            </deflist>
+        </chapter>
+    </chapter>
+</topic>

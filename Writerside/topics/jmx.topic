@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic
+        SYSTEM "https://resources.jetbrains.com/writerside/1.0/xhtml-entities.dtd">
+<topic xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="https://resources.jetbrains.com/writerside/1.0/topic.v2.xsd"
+       title="JMX" id="jmx">
+
+    <chapter title="JMX란?">
+        <list>
+            <li><control>JMX(Java Management Extensions)</control>는 JVM에서 구동하는 애플리케이션의 상태와 JVM의 시스템 상태를 모니터링하기 위한 도구를 제공하는 Java API입니다.</li>
+            <li>JMX를 이용해서 JVM 내부의 상태를 모니터링 할 수 있고, 다른 메트릭 시스템과 연동해서 통일된 인터페이스로 모니터링할 수 있습니다.</li>
+        </list>
+    </chapter>
+
+    <chapter title="JMX의 구조">
+        <img alt="jmx-1.png" src="jmx-1.png"/>
+        <deflist>
+            <def title="Probe Level (Instrumentation Level)">
+                <list>
+                    <li>애플리케이션의 데이터를 수집하는 단계입니다.</li>
+                    <li>MBeans라는 자바 컴포넌트로 구현할 수 있습니다.</li>
+                    <li>각각의 MBean은 에이전트 서비스를 통해 MBean 서버에 데이터를 전달합니다.</li>
+                </list>
+            </def>
+            <def title="MBean">
+                <list>
+                    <li>Managed Bean의 약어로 약속된 디자인 패턴에 의해서 MBean 인터페이스를 구현한 자바 오브젝트입니다.</li>
+                    <li>Standard MBean, Dynamic MBean, Model MBean으로 세 가지 종류의 MBean이 존재합니다.</li>
+                </list>
+            </def>
+            <def title="Agent Level">
+                <list>
+                    <li>에이전트를 구현하기 위한 스펙이 있으며, 리소스를 관리하는 역할을 수행합니다.</li>
+                    <li>보통 에이전트는 모니터링이 되는 장비에 위치하며, MBean 서버와 MBeans를 관리하는 서비스의 집합으로 구성되어 있습니다.</li>
+                </list>
+            </def>
+            <def title="Connector Level">
+                <list>
+                    <li>MBean의 정보를 요청한 Client가 원하는 프로토콜에 맞게 호환하는 작업을 합니다.</li>
+                    <li>MBean 자체는 한 번 만들어지고, 그것을 어떤 형식으로 가져갈지는 Connector에서 결정하고 구현합니다.</li>
+                    <li>모니터링 정보를 MBean으로 통일하면, 시간이 지나도 다양한 환경에서 원하는 요건에 맞게 조회할 수 있습니다.</li>
+                </list>
+            </def>
+        </deflist>
+    </chapter>
+
+    <chapter title="JMX 모니터링">
+        <chapter title="VisualVM">
+            <list>
+                <li><a href="https://visualvm.github.io/download.html">링크</a> 페이지에서 설치가 가능합니다.</li>
+                <li>VisualVM은 GUI로 JVM의 상태를 확인할 수 있고, Remote host도 JMX 포트로 연결해서 확인할 수 있습니다.</li>
+                <li>Thread dump와 Heap dump를 남길 수 있습니다.</li>
+            </list>
+            <procedure title="실습">
+                <step>
+                    <code-block lang="java">
+                        import java.util.Random;
+
+                        public class Main implements Runnable {
+
+                            public void run() {
+                                try {
+                                    Thread.sleep(1000); //1s
+                                } catch (InterruptedException e) {
+                                    throw new RuntimeException(e);
+                                }
+                                System.out.println(Thread.currentThread().getName());
+                            }
+
+                            public static void main(String[] args) throws InterruptedException {
+                                Main runnable = new Main();
+
+                                while (true) {
+                                    int random = new Random(System.currentTimeMillis()).nextInt();
+
+                                    ThreadGroup tg1 = new ThreadGroup("ThreadGroup" + random);
+                                    Thread t1 = new Thread(tg1, runnable, random + "_thread1");
+                                    t1.start();
+                                    Thread t2 = new Thread(tg1, runnable, random + "thread-2");
+                                    t2.start();
+                                    Thread t3 = new Thread(tg1, runnable, random + "thread-3");
+                                    t3.start();
+
+                                    System.out.println("Thread Group Name: " + tg1.getName());
+                                    tg1.list();
+                                    Thread.sleep(3 * 1000);
+                                }
+                            }
+                        }
+                    </code-block>
+                    <p>모니터링을 위해 스레드를 생성하고 해제하는 예제를 작성합니다.</p>
+                </step>
+                <step>
+                    <code-block lang="plain text">
+                        -Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.port=8081 -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false
+                    </code-block>
+                    <p>Edit Configurations에 VM Options로 옵션을 주고 실행합니다.</p>
+                </step>
+                <step>
+                    <p>VisualVM으로 확인합니다.</p>
+                </step>
+            </procedure>
+        </chapter>
+    </chapter>
+
+    <chapter title="JMX Prometheus Exporter">
+        <list>
+            <li><a href="https://github.com/prometheus/jmx_exporter">링크</a> 페이지에서 다운로드 및 가이드를 확인합니다.</li>
+            <li>별도의 프로세스에서 HTTP 서버로 노출하는 방법을 사용합니다.</li>
+        </list>
+        <procedure title="실습">
+            <step>
+                <code-block lang="plain text">
+                    hostPort: localhost:8081
+                    rules:
+                      - pattern: ".*"
+                </code-block>
+                <p><path>config.yaml</path> 파일을 작성합니다.</p>
+            </step>
+            <step>
+                <code-block lang="plain text">
+                    java -jar jmx_prometheus_httpserver-0.17.2.jar $your_prometheus_port config.yaml
+                </code-block>
+                <p>원하는 포트 번호로 별도의 HTTP 서버를 올립니다.</p>
+            </step>
+            <step>
+                <p><path>http://localhost:$your_prometheus_port/metrics</path> 페이지에서 결과를 확인합니다.</p>
+            </step>
+        </procedure>
+    </chapter>
+</topic>

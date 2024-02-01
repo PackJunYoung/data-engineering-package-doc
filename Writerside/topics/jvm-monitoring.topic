@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic
+        SYSTEM "https://resources.jetbrains.com/writerside/1.0/xhtml-entities.dtd">
+<topic xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="https://resources.jetbrains.com/writerside/1.0/topic.v2.xsd"
+       title="JVM 모니터링" id="jvm-monitoring">
+
+    <chapter title="Thread">
+        <chapter title="Thread dump">
+            <list>
+                <li>JVM의 현재 Thread 상태를 파일로 기록합니다.</li>
+                <li>어떤 스레드 그룹이 있는지, 각 스레드의 상태와 실행하고 있는 클래스 파일 등을 확인할 수 있습니다.</li>
+                <li>갑자기 CPU 사용율이 치솟거나 프로그램이 병목이 될 때, 원인 분석에 사용합니다.</li>
+            </list>
+            <deflist>
+                <def title="JMX+VisualVM를 이용한 조회">
+                    <p>VisualVM의 Thread 탭에서 Thread dump를 볼 수 있습니다.</p>
+                </def>
+                <def title="jcmd를 이용한 파일 저장">
+                    <code-block lang="shell">
+                        <![CDATA[
+                        jcmd <pid> Thread.print > $your_file
+                        ]]>
+                    </code-block>
+                </def>
+            </deflist>
+        </chapter>
+
+        <chapter title="Metrics">
+            <list>
+                <li>JMX 또는 prometheus로 노출된 metric에서 thread가 들어간 메트릭으로 확인이 가능합니다.</li>
+                <li>사용하는 도구, 라이브러리, 플러그인, 설정 등에 따라 종류와 이름이 달라질 수 있습니다.</li>
+                <li>thread count, thread cpu time, uptime 등을 확인할 수 있습니다.</li>
+            </list>
+        </chapter>
+    </chapter>
+
+    <chapter title="Memory">
+        <chapter title="Heap dump">
+            <list>
+                <li>JVM의 현재 heap 메모리 상태를 파일로 기록합니다.</li>
+                <li>heap 영역 별로 사용량이나 클래스별 object의 수 등을 확인할 수 있습니다.</li>
+                <li>메모리 사용율이 예상보다 높거나, OOM이 발생했을 때 원인을 분석하기 위해 사용합니다.</li>
+            </list>
+            <deflist>
+                <def title="JMX+VisualVM을 이용한 조회">
+                    <p>VisualVM의 Monitor 탭에서 Heap dump를 볼 수 있습니다.</p>
+                </def>
+                <def title="jcmd를 이용한 파일 저장">
+                    <code-block lang="shell">
+                        <![CDATA[
+                        jcmd <pid> GC.heap_dump $your_file
+                        ]]>
+                    </code-block>
+                </def>
+            </deflist>
+        </chapter>
+        <chapter title="Metrics">
+            <list>
+                <li>heap usage/size, off heap usage/size, 영역별 usage/size 등을 확인할 수 있습니다.</li>
+            </list>
+        </chapter>
+    </chapter>
+
+    <chapter title="GC">
+        <chapter title="GC Log">
+            <list>
+                <li>GC는 자바 성능에 큰 영향을 미치기 때문에 GC가 일어날 때마다 로그를 기록해서 정보를 저장할 수 있습니다.</li>
+            </list>
+            <deflist>
+                <def title="기본 설정">
+                    <code-block lang="plain text">
+                        -verbose:gc -XX:+PrintGCDetails -XX:+PrintGCDateStamps -Xloggc:$your_logfile_name -XX:+UseGCLogFileRotation -XX:GCLogFileSize=1m -X X:NumberOfGCLogFiles=10
+                    </code-block>
+                </def>
+            </deflist>
+        </chapter>
+
+        <chapter title="GC Log Analyzer">
+            <list>
+                <li><a href="https://gceasy.io/">링크</a> 페이지에서 하루 5건 무료로 GC 로그를 시각화하고 분석할 수 있습니다.</li>
+            </list>
+
+        </chapter>
+
+        <chapter title="Metrics">
+            <list>
+                <li>gc thread count, memory usage before/after gc, gc time/duration 등을 확인할 수 있습니다.</li>
+            </list>
+        </chapter>
+
+        <procedure title="GC 실습">
+            <step>
+                <code-block lang="gradle">
+                    implementation 'org.apache.commons:commons-lang3:3.12.0'
+                </code-block>
+                <p>build.gradle</p>
+            </step>
+            <step>
+                <code-block lang="java">
+                    <![CDATA[
+                    import java.util.ArrayList; import java.util.List;
+                    import org.apache.commons.lang3.RandomStringUtils;
+                    
+                    public class Oom {
+                        public static void main(String[] args) throws InterruptedException {
+                            List<String> list = new ArrayList<>(); 
+                            while(true) {
+                                new Object();
+                                String str = RandomStringUtils.random(10); 
+                                list.add(str);
+                                if(str.contains("a")) {
+                                    Thread.sleep(500); 
+                                }
+                            } 
+                        }
+                    }
+                    ]]>
+                </code-block>
+                <p>Oom.java</p>
+            </step>
+            <step>
+                <code-block lang="shell">
+                    -Xms128m -Xmx128m -verbose:gc -XX:+PrintGCDetails -XX:+PrintGCDateStamps -Xloggc:./gc_%p.log -XX:+UseGCLogFileRotation -XX:GCLogFil eSize=1m -XX:NumberOfGCLogFiles=10
+                </code-block>
+                <p>위와 같은 VM Options를 추가하고 실행합니다.</p>
+            </step>
+        </procedure>
+    </chapter>
+</topic>
